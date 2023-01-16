@@ -1,0 +1,21 @@
+{
+  "_id": {
+    "$oid": "633200fce26d4251d221c6b8"
+  },
+  "rolePrivileges": [
+    "manageAdmins",
+    "manageUsers"
+  ],
+  "roleName": "Admin",
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1618339493048"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1618339493048"
+    }
+  },
+  "__v": 0
+}
