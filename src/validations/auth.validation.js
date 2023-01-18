@@ -6,6 +6,7 @@ const register = {
     firstName: Joi.string().required().description("First name is required"),
     lastName: Joi.string().required().description("Last name is required"),
     email: Joi.string().email().required().description("Email is required"),
+    userName: Joi.string().required().description("User Name is required"),
     password: Joi.string().required().description("Password is required"),
     socialLinks: Joi.object().keys({
       facebook: Joi.string().uri().optional(),

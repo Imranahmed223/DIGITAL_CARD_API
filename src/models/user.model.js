@@ -5,16 +5,6 @@ const { toJSON, paginate } = require("./plugins");
 
 const userSchema = mongoose.Schema(
   {
-    firstName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    lastName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
     email: {
       type: String,
       required: true,
@@ -34,31 +24,10 @@ const userSchema = mongoose.Schema(
       minlength: 8,
       private: true, // used by the toJSON plugin
     },
-    socialLinks: {
-      facebook: {
-        type: String,
-        default: null,
-      },
-      google: {
-        type: String,
-        default: null,
-      },
-      instagram: {
-        type: String,
-        default: null,
-      },
-      youtube: {
-        type: String,
-        default: null,
-      },
-      tiktok: {
-        type: String,
-        default: null,
-      },
-      snapchat: {
-        type: String,
-        default: null,
-      },
+    userName: {
+      type: String,
+      unique: true,
+      required: true,
     },
     role: {
       type: String,
@@ -94,6 +63,17 @@ userSchema.plugin(paginate);
  */
 userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
   const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+  return !!user;
+};
+
+/**
+ * Check if email is taken
+ * @param {string} email - The user's email
+ * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
+ * @returns {Promise<boolean>}
+ */
+userSchema.statics.isUserNameTaken = async function (userName, excludeUserId) {
+  const user = await this.findOne({ userName, _id: { $ne: excludeUserId } });
   return !!user;
 };
 

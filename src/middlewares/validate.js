@@ -14,7 +14,7 @@ const validate = (schema) => (req, res, next) => {
       }
     }
   }
-  data = JSON.parse(JSON.stringify(data));
+  console.log(data);
   req.body = data;
   const validSchema = pick(schema, ["params", "query", "body"]);
   const object = pick(req, Object.keys(validSchema));

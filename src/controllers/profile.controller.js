@@ -5,45 +5,144 @@ const catchAsync = require("../utils/catchAsync");
 const { profileService } = require("../services");
 const config = require("../config/config");
 
-const createProfile = catchAsync(async (req, res) => {
+const getProfile = catchAsync(async (req, res) => {
+  const { user } = req;
+  const profile = await profileService.getProfileByUserId(user.id);
+  if (!profile) throw new ApiError(httpStatus.NOT_FOUND, "No profile found!");
+  res.send(profile);
+});
+const editCard = catchAsync(async (req, res) => {
   let body = req.body;
-  const profile = await profileService.createProfile(body);
+  const { user } = req;
+  const profile = await profileService.editCard(body, user.id);
   res.status(httpStatus.CREATED).send(profile);
 });
 
-const getProfiles = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["firstName", "role"]);
-  const options = pick(req.query, ["sortBy", "limit", "page"]);
-  options.populate = "user";
-
-  const result = await profileService.queryProfiles(filter, options);
-  result.results.forEach((res) => {
-    res.user.photoPath = config.rootPath + res.user.photoPath;
-  });
-  res.send(result);
+const addSocialLink = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  const profile = await profileService.addSocialLink(body, user.id);
+  res.status(httpStatus.CREATED).send(profile);
 });
 
-const getProfile = catchAsync(async (req, res) => {
-  const profile = await profileService.getProfileByUserId(req.params.id);
-  if (!profile) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Profile not found");
+const updateSocialLink = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  const profile = await profileService.updateSocialLink(body, user.id);
+  res.status(httpStatus.CREATED).send(profile);
+});
+const deleteSocialLink = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  const profile = await profileService.deleteSocialLink(body, user.id);
+  res.status(httpStatus.CREATED).send(profile);
+});
+
+const editStory = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  const profile = await profileService.editStory(body, user.id);
+  res.status(httpStatus.CREATED).send(profile);
+});
+
+const addEvents = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  const profile = await profileService.addEvent(body, user.id);
+  res.status(httpStatus.CREATED).send(profile);
+});
+
+const updateEvents = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  const profile = await profileService.updateEvent(body, user.id);
+  res.status(httpStatus.CREATED).send(profile);
+});
+
+const deleteEvent = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  const profile = await profileService.deleteEvent(body, user.id);
+  res.status(httpStatus.CREATED).send(profile);
+});
+
+const addVideo = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  if (req.file) {
+    body.photo = req.file.filename;
+    const profile = await profileService.addVideo(body, user.id);
+    for (var i = 0; i < profile.videos.length; i++) {
+      profile.videos[i] = config.rootPath + profile.videos[i];
+    }
+    res.status(httpStatus.CREATED).send(profile);
+  } else throw new ApiError(httpStatus.BAD_REQUEST, "Video is required");
+});
+
+const deleteVideo = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  const profile = await profileService.deleteVideo(body, user.id);
+  for (var i = 0; i < profile.videos.length; i++) {
+    profile.videos[i] = config.rootPath + profile.videos[i];
   }
-  profile.user.photoPath = config.rootPath + profile.user.photoPath;
-  res.send(profile);
+  res.status(httpStatus.CREATED).send(profile);
 });
 
-const updateProfile = catchAsync(async (req, res) => {
-  let updateUserBody = req.body;
-  const profile = await profileService.updateProfileById(
-    req.params.id,
-    updateUserBody
-  );
-  res.send(profile);
+const addLinks = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  if (req.file) body.photoPath = req.file.filename;
+  const profile = await profileService.addLinks(body, user.id);
+  for (var i = 0; i < profile.links.length; i++) {
+    profile.links[i].photoPath = config.rootPath + profile.links[i].photoPath;
+  }
+  res.status(httpStatus.CREATED).send(profile);
+});
+
+const updateLinks = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  if (req.file) body.photoPath = req.file.filename;
+  const profile = await profileService.updateLinks(body, user.id);
+  for (var i = 0; i < profile.links.length; i++) {
+    profile.links[i].photoPath = config.rootPath + profile.links[i].photoPath;
+  }
+  res.status(httpStatus.CREATED).send(profile);
+});
+const deleteLink = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  if (req.file) body.photoPath = req.file.filename;
+  const profile = await profileService.deleteLink(body, user.id);
+  for (var i = 0; i < profile.links.length; i++) {
+    profile.links[i].photoPath = config.rootPath + profile.links[i].photoPath;
+  }
+  res.status(httpStatus.CREATED).send(profile);
+});
+
+const updateContactInfo = catchAsync(async (req, res) => {
+  let body = req.body;
+  const { user } = req;
+  const profile = await profileService.updateContactInfo(body, user.id);
+  res.status(httpStatus.CREATED).send(profile);
 });
 
 module.exports = {
-  createProfile,
-  getProfiles,
+  editCard,
   getProfile,
-  updateProfile,
+  addSocialLink,
+  updateSocialLink,
+  deleteSocialLink,
+  deleteSocialLink,
+  editStory,
+  addEvents,
+  updateEvents,
+  deleteEvent,
+  addVideo,
+  deleteVideo,
+  addLinks,
+  updateLinks,
+  deleteLink,
+  updateContactInfo,
 };

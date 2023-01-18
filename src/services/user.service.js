@@ -15,7 +15,7 @@ const createUser = async (userBody) => {
   const profileBody = {
     user: user.id,
   };
-  await Profile.create(profileBody);
+  const profile = await Profile.create(profileBody);
   return user;
 };
 

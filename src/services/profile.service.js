@@ -6,12 +6,13 @@ const ApiError = require("../utils/ApiError");
  * @param {Object} profileBody
  * @returns {Promise<Profile>}
  */
-const createProfile = async (profileBody) => {
-  const user = await User.findById(profileBody.user);
-  if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "No user found.");
+const editCard = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
   }
-  const profile = await Profile.create(profileBody);
+  Object.assign(profile, profileBody);
+  profile.save();
   return profile;
 };
 
@@ -34,43 +35,253 @@ const getProfileByUserId = async (id) => {
 };
 
 /**
- * Update user by id
- * @param {ObjectId} userId
- * @param {Object} updateBody
- * @returns {Promise<User>}
+ * Add Social Link
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
  */
-const updateProfileById = async (userId, updateBody) => {
-  const profile = await getProfileByUserId(userId);
+const addSocialLink = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
   if (!profile) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Profile not found");
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
   }
-  Object.assign(profile, updateBody);
+  let key = Object.keys(profileBody)[0];
+  profile.socialLinks[key] = profileBody[key];
   await profile.save();
-  await Profile.populate(profile, { path: "user" });
   return profile;
 };
 
 /**
- * Delete user by id
- * @param {ObjectId} userId
- * @returns {Promise<User>}
+ * Update Social Link
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
  */
-const deleteProfileById = async (userId) => {
-  const profile = await getUserById(userId);
+const updateSocialLink = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
   if (!profile) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      "No account found for this user!"
-    );
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
   }
-  await profile.remove();
-  return (response = { msg: "profile deleted" });
+  let key = Object.keys(profileBody)[0];
+  profile.socialLinks[key] = profileBody[key];
+  await profile.save();
+  return profile;
 };
 
+/**
+ * Delete Social Link
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const deleteSocialLink = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  let key = Object.keys(profileBody)[0];
+  if (profile.socialLinks[key]) profile.socialLinks[key] = null;
+  await profile.save();
+  return profile;
+};
+
+/**
+ * DEdit Story
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const editStory = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  Object.assign(profile, profileBody);
+  await profile.save();
+  return profile;
+};
+
+/**
+ * Add Story
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const addEvent = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  const newEvent = {
+    title: profileBody.title ? profileBody.title : null,
+    story: profileBody.story ? profileBody.story : null,
+  };
+  profile.events.push(newEvent);
+  await profile.save();
+  return profile;
+};
+
+/**
+ * Update Event Story
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const updateEvent = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  let index = profile.events.findIndex(
+    (e) => e._id.toString() === profileBody.id.toString()
+  );
+  if (index !== -1) {
+    profile.events[index]["title"] = profileBody.title;
+    profile.events[index]["story"] = profileBody.story;
+  }
+  await profile.save();
+  return profile;
+};
+/**
+ * Delete Event Story
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const deleteEvent = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  let index = profile.events.findIndex(
+    (e) => e._id.toString() === profileBody.id.toString()
+  );
+  if (index !== -1) profile.events.splice(index, 1);
+  await profile.save();
+  return profile;
+};
+
+/**
+ * Delete Video
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const addVideo = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  console.log(profileBody);
+  profile.videos.push(profileBody.photo);
+  console.log(profile);
+  await profile.save();
+  return profile;
+};
+
+/**
+ * Delete Video
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const deleteVideo = async (profileBody, id) => {
+  console.log(profileBody);
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  if (profile.videos.length > 0) {
+    let video = profileBody.video.split("/");
+    video = video[video.length - 1];
+    let index = profile.videos.indexOf(video);
+    console.log(index);
+    if (index !== -1) {
+      profile.videos.splice(index, 1);
+      await profile.save();
+      return profile;
+    } else {
+      throw new ApiError(httpStatus.NOT_FOUND, "No Videos Found");
+    }
+  }
+  throw new ApiError(httpStatus.NOT_FOUND, "No Videos Found");
+};
+
+/**
+ * Add Links
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const addLinks = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  profile.links.push(profileBody);
+  await profile.save();
+  return profile;
+};
+
+/**
+ * Update Links
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const updateLinks = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  let index = profile.links.findIndex(
+    (e) => e._id.toString() === profileBody.id.toString()
+  );
+  if (index !== -1) {
+    Object.assign(profile.links[index], profileBody);
+    await profile.save();
+    return profile;
+  } else throw new ApiError(httpStatus.NOT_FOUND, "Nothing found");
+};
+
+/**
+ * Update Links
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const deleteLink = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  let index = profile.links.findIndex(
+    (e) => e._id.toString() === profileBody.id.toString()
+  );
+  if (index !== -1) {
+    profile.links.splice(index, 1);
+    await profile.save();
+    return profile;
+  } else throw new ApiError(httpStatus.NOT_FOUND, "Nothing found");
+};
+
+/**
+ * Update Contact
+ * @param {Object} profileBody
+ * @returns {Promise<Profile>}
+ */
+const updateContactInfo = async (profileBody, id) => {
+  const profile = await Profile.findOne({ user: id });
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
+  }
+  console.log("Prof => ", profileBody);
+  Object.assign(profile.contactInfo, profileBody);
+  await profile.save();
+  return profile;
+};
 module.exports = {
-  createProfile,
-  queryProfiles,
+  editCard,
   getProfileByUserId,
-  updateProfileById,
-  deleteProfileById,
+  addSocialLink,
+  updateSocialLink,
+  deleteSocialLink,
+  editStory,
+  addEvent,
+  updateEvent,
+  deleteEvent,
+  addVideo,
+  deleteVideo,
+  addLinks,
+  updateLinks,
+  deleteLink,
+  updateContactInfo,
 };

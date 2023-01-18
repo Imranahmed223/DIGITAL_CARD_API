@@ -25,6 +25,7 @@ const updateUser = {
       firstName: Joi.string().optional(),
       lastName: Joi.string().optional(),
       email: Joi.string().email().optional(),
+      userName: Joi.string().allow().optional(),
       password: Joi.string().optional(),
       socialLinks: Joi.object().keys({
         facebook: Joi.string().uri().optional(),

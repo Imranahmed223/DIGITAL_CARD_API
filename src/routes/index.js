@@ -19,7 +19,7 @@ const defaultRoutes = [
     route: adminRoute,
   },
   {
-    path: "/profiles",
+    path: "/profile",
     route: profileRoute,
   },
 ];
