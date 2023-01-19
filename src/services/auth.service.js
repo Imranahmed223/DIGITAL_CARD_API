@@ -116,16 +116,20 @@ const refreshAuth = async (refreshToken) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate");
   }
 };
-
-const changePassword = async (body) => {
-  const { email, user_id, oldPassword, newPassword } = body;
-  const user = await User.findOne({ email, user_id });
-  if (!user) {
-    throw new ApiError(
-      httpStatus.UNAUTHORIZED,
-      "No user found, please try with correct email and membership id!"
-    );
-  }
+/**
+ *
+ * @param {*} body
+ * @returns {Object<User>}
+ */
+const changePassword = async (body, user) => {
+  const { oldPassword, newPassword } = body;
+  // const user = await User.findOne({ email });
+  // if (!user) {
+  //   throw new ApiError(
+  //     httpStatus.UNAUTHORIZED,
+  //     "No user found, please try with correct email!"
+  //   );
+  // }
   const check = await user.isPasswordMatch(oldPassword);
   if (!check) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Incorrect old password");

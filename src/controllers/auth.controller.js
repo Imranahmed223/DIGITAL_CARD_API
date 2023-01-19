@@ -68,7 +68,8 @@ const resetPasswordviaSms = catchAsync(async (req, res) => {
  * Change Password Module
  */
 const changePassword = catchAsync(async (req, res) => {
-  const user = await authService.changePassword(req.body);
+  const { user } = req;
+  const response = await authService.changePassword(req.body, user);
   // const emailMessage = {
   //   to: user.email,
   //   from: {

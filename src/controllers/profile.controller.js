@@ -8,6 +8,12 @@ const config = require("../config/config");
 const getProfile = catchAsync(async (req, res) => {
   const { user } = req;
   const profile = await profileService.getProfileByUserId(user.id);
+  for (var i = 0; i < profile.videos.length; i++) {
+    profile.videos[i] = config.rootPath + profile.videos[i];
+  }
+  for (var i = 0; i < profile.links.length; i++) {
+    profile.links[i].photoPath = config.rootPath + profile.links[i].photoPath;
+  }
   if (!profile) throw new ApiError(httpStatus.NOT_FOUND, "No profile found!");
   res.send(profile);
 });

@@ -24,7 +24,7 @@ router.post(
   authController.resetPasswordviaSms
 );
 router.post(
-  "/change-password",
+  "/change/password",
   auth(),
   validate(authValidation.changePassword),
   authController.changePassword
