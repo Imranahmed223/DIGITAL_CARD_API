@@ -27,4 +27,9 @@ router
     validate(userValidation.updateUser),
     userController.updateUser
   );
+
+router.route("/qr/generate").get(auth(), userController.generateQRCode);
+router
+  .route("/qr/read")
+  .post(auth(), validate(userValidation.readQRCode), userController.readQRCode);
 module.exports = router;

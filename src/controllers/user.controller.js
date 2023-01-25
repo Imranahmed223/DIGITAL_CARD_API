@@ -4,8 +4,11 @@ const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
 const { userService } = require("../services");
 const config = require("../config/config");
+const QRCode = require("qrcode");
 const { User } = require("../models");
-
+const Jimp = require("jimp");
+const fs = require("fs");
+const qrCodeReader = require("qrcode-reader");
 const createUser = catchAsync(async (req, res) => {
   let body = req.body;
   if (req.file) createBody.photoPath = req.file.filename;
@@ -78,6 +81,46 @@ const removeUserDeviceToken = catchAsync(async (req, res) => {
   return res.status(httpStatus.NO_CONTENT).send();
 });
 
+const generateQRCode = catchAsync(async (req, res) => {
+  const { user } = req;
+  const timestamp = Date();
+  QRCode.toFile(
+    `public/uploads/qr-${timestamp}.png`,
+    user.id,
+    {
+      errorCorrectionLevel: "H",
+      type: "png",
+    },
+    function (err) {
+      if (err)
+        throw new ApiError(
+          httpStatus.INTERNAL_SERVER_ERROR,
+          "Something went wrong, please try again!"
+        );
+      res.send({ qrPath: config.rootPath + `qr-${timestamp}.png` });
+    }
+  );
+});
+
+const readQRCode = catchAsync(async (req, res) => {
+  const { qrPath } = req.body;
+  let path = qrPath.split("/");
+  const buffer = fs.readFileSync(`public/uploads/${path[path.length - 1]}`);
+  Jimp.read(buffer, function (err, image) {
+    if (err) {
+      console.error(err);
+    }
+    const qrCodeInstance = new qrCodeReader();
+    qrCodeInstance.callback = function (err, value) {
+      if (err) {
+        console.error(err);
+      }
+      console.log(value.result);
+      res.send(value.result);
+    };
+    qrCodeInstance.decode(image.bitmap);
+  });
+});
 module.exports = {
   createUser,
   getUsers,
@@ -86,4 +129,6 @@ module.exports = {
   deleteUser,
   addUserDeviceToken,
   removeUserDeviceToken,
+  generateQRCode,
+  readQRCode,
 };

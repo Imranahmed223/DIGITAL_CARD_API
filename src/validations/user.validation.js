@@ -58,6 +58,15 @@ const deviceToken = {
     .min(1)
     .max(1),
 };
+
+const readQRCode = {
+  body: Joi.object()
+    .keys({
+      qrPath: Joi.string().required(),
+    })
+    .min(1)
+    .max(1),
+};
 module.exports = {
   createUser,
   getUsers,
@@ -65,4 +74,5 @@ module.exports = {
   updateUser,
   deleteUser,
   deviceToken,
+  readQRCode,
 };
