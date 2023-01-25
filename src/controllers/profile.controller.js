@@ -20,7 +20,9 @@ const getProfile = catchAsync(async (req, res) => {
 const editCard = catchAsync(async (req, res) => {
   let body = req.body;
   const { user } = req;
+  if (req.file) body.photoPath = req.file.filename;
   const profile = await profileService.editCard(body, user.id);
+  profile.photoPath = config.rootPath + profile.photoPath;
   res.status(httpStatus.CREATED).send(profile);
 });
 

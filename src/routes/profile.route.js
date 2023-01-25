@@ -11,6 +11,7 @@ router.route("/").get(auth(), profileController.getProfile);
 router.patch(
   "/edit/card",
   auth(),
+  fileUpload.single("photoPath"),
   validate(profileValidation.editCard),
   profileController.editCard
 );

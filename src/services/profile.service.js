@@ -7,6 +7,7 @@ const ApiError = require("../utils/ApiError");
  * @returns {Promise<Profile>}
  */
 const editCard = async (profileBody, id) => {
+  console.log(profileBody);
   const profile = await Profile.findOne({ user: id });
   if (!profile) {
     throw new ApiError(httpStatus.NOT_FOUND, "No profile found");

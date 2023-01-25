@@ -24,6 +24,10 @@ const profileSchema = mongoose.Schema(
       type: String,
       default: "",
     },
+    photoPath: {
+      type: String,
+      default: null,
+    },
     socialLinks: {
       facebook: {
         type: String,
