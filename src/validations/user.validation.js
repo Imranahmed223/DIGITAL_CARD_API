@@ -62,7 +62,7 @@ const deviceToken = {
 const readQRCode = {
   body: Joi.object()
     .keys({
-      qrPath: Joi.string().required(),
+      id: Joi.string().custom(objectId),
     })
     .min(1)
     .max(1),

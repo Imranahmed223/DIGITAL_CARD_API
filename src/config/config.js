@@ -20,6 +20,7 @@ const envVarsSchema = Joi.object()
     JWT_REFRESH_EXPIRATION_DAYS: Joi.number()
       .default(182)
       .description("days after which refresh tokens expire"),
+    QRCODE_LINK: Joi.string().required(),
   })
   .unknown();
 
@@ -56,4 +57,5 @@ module.exports = {
     refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS,
     resetPasswordExpirationMinutes: 10,
   },
+  qrLink: envVars.QRCODE_LINK,
 };

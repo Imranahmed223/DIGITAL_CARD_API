@@ -31,5 +31,5 @@ router
 router.route("/qr/generate").get(auth(), userController.generateQRCode);
 router
   .route("/qr/read")
-  .post(auth(), validate(userValidation.readQRCode), userController.readQRCode);
+  .post(validate(userValidation.readQRCode), userController.readQRCode);
 module.exports = router;
