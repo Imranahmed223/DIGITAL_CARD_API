@@ -8,11 +8,19 @@ const config = require("../config/config");
 const getProfile = catchAsync(async (req, res) => {
   const { user } = req;
   const profile = await profileService.getProfileByUserId(user.id);
+  profile.photoPath = profile.photoPath.toString();
+  profile.photoPath = config.rootPath + profile.photoPath;
+  profile.coverImage = config.rootPath + profile.coverImage;
   for (var i = 0; i < profile.videos.length; i++) {
     profile.videos[i] = config.rootPath + profile.videos[i];
   }
   for (var i = 0; i < profile.links.length; i++) {
     profile.links[i].photoPath = config.rootPath + profile.links[i].photoPath;
+  }
+  for (var i = 0; i < profile.events.length; i++) {
+    profile.events[i].images = profile.events[i].images.map(
+      (file) => (file = config.rootPath + file)
+    );
   }
   if (!profile) throw new ApiError(httpStatus.NOT_FOUND, "No profile found!");
   res.send(profile);
@@ -20,9 +28,16 @@ const getProfile = catchAsync(async (req, res) => {
 const editCard = catchAsync(async (req, res) => {
   let body = req.body;
   const { user } = req;
-  if (req.file) body.photoPath = req.file.filename;
+  if (req.files) {
+    if (req.files["photoPath"])
+      body.photoPath = req.files["photoPath"][0].filename;
+    if (req.files["coverImage"]) {
+      body.coverImage = req.files["coverImage"][0].filename;
+    }
+  }
   const profile = await profileService.editCard(body, user.id);
   profile.photoPath = config.rootPath + profile.photoPath;
+  profile.coverImage = config.rootPath + profile.coverImage;
   res.status(httpStatus.CREATED).send(profile);
 });
 
@@ -56,6 +71,9 @@ const editStory = catchAsync(async (req, res) => {
 const addEvents = catchAsync(async (req, res) => {
   let body = req.body;
   const { user } = req;
+  if (req.files) {
+    body.images = req.files.map((file) => file.filename);
+  }
   const profile = await profileService.addEvent(body, user.id);
   res.status(httpStatus.CREATED).send(profile);
 });
@@ -63,6 +81,11 @@ const addEvents = catchAsync(async (req, res) => {
 const updateEvents = catchAsync(async (req, res) => {
   let body = req.body;
   const { user } = req;
+  if (req.files) {
+    let images = [];
+    images = req.files.map((file) => file.filename);
+    body.images = images;
+  }
   const profile = await profileService.updateEvent(body, user.id);
   res.status(httpStatus.CREATED).send(profile);
 });

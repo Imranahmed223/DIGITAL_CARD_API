@@ -11,7 +11,16 @@ router.route("/").get(auth(), profileController.getProfile);
 router.patch(
   "/edit/card",
   auth(),
-  fileUpload.single("photoPath"),
+  fileUpload.fields([
+    {
+      name: "photoPath",
+      maxCount: 1,
+    },
+    {
+      name: "coverImage",
+      maxCount: 1,
+    },
+  ]),
   validate(profileValidation.editCard),
   profileController.editCard
 );
@@ -45,11 +54,13 @@ router
   .get()
   .post(
     auth(),
+    fileUpload.array("images"),
     validate(profileValidation.addEvent),
     profileController.addEvents
   )
   .patch(
     auth(),
+    fileUpload.array("images"),
     validate(profileValidation.updateEvent),
     profileController.updateEvents
   )

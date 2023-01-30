@@ -13,7 +13,7 @@ const editCard = async (profileBody, id) => {
     throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
   }
   Object.assign(profile, profileBody);
-  profile.save();
+  await profile.save();
   return profile;
 };
 
@@ -111,6 +111,7 @@ const addEvent = async (profileBody, id) => {
   const newEvent = {
     title: profileBody.title ? profileBody.title : null,
     story: profileBody.story ? profileBody.story : null,
+    images: profileBody.images.length > 0 ? profileBody.images : [],
   };
   profile.events.push(newEvent);
   await profile.save();
@@ -123,6 +124,7 @@ const addEvent = async (profileBody, id) => {
  * @returns {Promise<Profile>}
  */
 const updateEvent = async (profileBody, id) => {
+  console.log(profileBody);
   const profile = await Profile.findOne({ user: id });
   if (!profile) {
     throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
@@ -130,9 +132,15 @@ const updateEvent = async (profileBody, id) => {
   let index = profile.events.findIndex(
     (e) => e._id.toString() === profileBody.id.toString()
   );
+  console.log(profile);
   if (index !== -1) {
     profile.events[index]["title"] = profileBody.title;
     profile.events[index]["story"] = profileBody.story;
+    if (profileBody.images.length)
+      profile.events[index]["images"] = [
+        ...profile.events[index]["images"],
+        ...profileBody.images,
+      ];
   }
   await profile.save();
   return profile;

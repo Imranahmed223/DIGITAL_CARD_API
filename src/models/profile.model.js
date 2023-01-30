@@ -28,6 +28,10 @@ const profileSchema = mongoose.Schema(
       type: String,
       default: null,
     },
+    coverImage: {
+      type: String,
+      default: null,
+    },
     socialLinks: {
       facebook: {
         type: String,
@@ -104,6 +108,10 @@ const profileSchema = mongoose.Schema(
         story: {
           type: String,
           default: "",
+        },
+        images: {
+          type: [String],
+          default: [],
         },
       },
     ],
