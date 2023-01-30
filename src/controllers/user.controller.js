@@ -4,12 +4,7 @@ const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
 const { userService } = require("../services");
 const config = require("../config/config");
-const QRCode = require("qrcode");
-const { User, Profile } = require("../models");
-const Jimp = require("jimp");
-const fs = require("fs");
-const qrCodeReader = require("qrcode-reader");
-const { mongo, default: mongoose } = require("mongoose");
+const { Profile } = require("../models");
 const createUser = catchAsync(async (req, res) => {
   let body = req.body;
   if (req.file) createBody.photoPath = req.file.filename;
@@ -91,6 +86,22 @@ const generateQRCode = catchAsync(async (req, res) => {
 const readQRCode = catchAsync(async (req, res) => {
   const { id } = req.body;
   const profile = await Profile.findOne({ user: mongoose.Types.ObjectId(id) });
+  profile.photoPath = profile.photoPath.toString();
+  profile.photoPath = config.rootPath + profile.photoPath;
+  profile.coverImage = config.rootPath + profile.coverImage;
+  for (var i = 0; i < profile.videos.length; i++) {
+    profile.videos[i] = config.rootPath + profile.videos[i];
+  }
+  for (var i = 0; i < profile.links.length; i++) {
+    profile.links[i].photoPath = config.rootPath + profile.links[i].photoPath;
+  }
+  for (var i = 0; i < profile.events.length; i++) {
+    profile.events[i].images = profile.events[i].images.map(
+      (file) => (file = config.rootPath + file)
+    );
+  }
+  if (!profile) throw new ApiError(httpStatus.NOT_FOUND, "No profile found!");
+  res.send(profile);
   res.send({ profile });
 });
 module.exports = {
