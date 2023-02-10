@@ -75,11 +75,11 @@ router
   .get()
   .post(auth(), fileUpload.single("vidoe"), profileController.addVideo);
 
-router.post(
-  "/videos/delete",
+router.patch(
+  "/videos/update",
   auth(),
-  validate(profileValidation.deleteVideo),
-  profileController.deleteVideo
+  fileUpload.single("vidoe"),
+  profileController.updateVideo
 );
 
 router

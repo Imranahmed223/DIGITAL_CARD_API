@@ -115,7 +115,9 @@ const profileSchema = mongoose.Schema(
         },
       },
     ],
-    videos: [String],
+    videos: {
+      type: String,
+    },
     links: [
       {
         photoPath: {

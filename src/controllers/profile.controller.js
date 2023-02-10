@@ -11,9 +11,7 @@ const getProfile = catchAsync(async (req, res) => {
   profile.photoPath = profile.photoPath.toString();
   profile.photoPath = config.rootPath + profile.photoPath;
   profile.coverImage = config.rootPath + profile.coverImage;
-  for (var i = 0; i < profile.videos.length; i++) {
-    profile.videos[i] = config.rootPath + profile.videos[i];
-  }
+  profile.videos = config.rootPath + profile.videos;
   for (var i = 0; i < profile.links.length; i++) {
     profile.links[i].photoPath = config.rootPath + profile.links[i].photoPath;
   }
@@ -113,25 +111,38 @@ const addVideo = catchAsync(async (req, res) => {
       "	video/mkv",
     ];
     if (!mimeTypes.includes(req.file.mimetype)) {
-      res.status(400).send({ msg: "Please a valid video" });
+      res.status(400).send({ msg: "Please add a valid video" });
     }
     body.photo = req.file.filename;
     const profile = await profileService.addVideo(body, user.id);
-    for (var i = 0; i < profile.videos.length; i++) {
-      profile.videos[i] = config.rootPath + profile.videos[i];
-    }
+    profile.videos = config.rootPath + profile.videos;
     res.status(httpStatus.CREATED).send(profile);
   } else throw new ApiError(httpStatus.BAD_REQUEST, "Video is required");
 });
 
-const deleteVideo = catchAsync(async (req, res) => {
+const updateVideo = catchAsync(async (req, res) => {
   let body = req.body;
   const { user } = req;
-  const profile = await profileService.deleteVideo(body, user.id);
-  for (var i = 0; i < profile.videos.length; i++) {
-    profile.videos[i] = config.rootPath + profile.videos[i];
-  }
-  res.status(httpStatus.CREATED).send(profile);
+  if (req.file) {
+    const mimeTypes = [
+      "video/x-flv",
+      "video/mp4",
+      "application/x-mpegURL",
+      "video/MP2T",
+      "video/3gpp",
+      "video/quicktime",
+      "video/x-msvideo",
+      "video/x-ms-wmv",
+      "video/mkv",
+    ];
+    if (!mimeTypes.includes(req.file.mimetype)) {
+      res.status(400).send({ msg: "Please add a valid video" });
+    }
+    body.photo = req.file.filename;
+    const profile = await profileService.deleteVideo(body, user.id);
+    profile.videos = config.rootPath + profile.videos;
+    res.status(httpStatus.CREATED).send(profile);
+  } else throw new ApiError(httpStatus.BAD_REQUEST, "Video is required");
 });
 
 const addLinks = catchAsync(async (req, res) => {
@@ -185,7 +196,7 @@ module.exports = {
   updateEvents,
   deleteEvent,
   addVideo,
-  deleteVideo,
+  updateVideo,
   addLinks,
   updateLinks,
   deleteLink,

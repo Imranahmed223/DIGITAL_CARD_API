@@ -173,9 +173,7 @@ const addVideo = async (profileBody, id) => {
   if (!profile) {
     throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
   }
-  console.log(profileBody);
-  profile.videos.push(profileBody.photo);
-  console.log(profile);
+  profile.videos = profileBody.photo;
   await profile.save();
   return profile;
 };
@@ -186,25 +184,13 @@ const addVideo = async (profileBody, id) => {
  * @returns {Promise<Profile>}
  */
 const deleteVideo = async (profileBody, id) => {
-  console.log(profileBody);
   const profile = await Profile.findOne({ user: id });
   if (!profile) {
     throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
   }
-  if (profile.videos.length > 0) {
-    let video = profileBody.video.split("/");
-    video = video[video.length - 1];
-    let index = profile.videos.indexOf(video);
-    console.log(index);
-    if (index !== -1) {
-      profile.videos.splice(index, 1);
-      await profile.save();
-      return profile;
-    } else {
-      throw new ApiError(httpStatus.NOT_FOUND, "No Videos Found");
-    }
-  }
-  throw new ApiError(httpStatus.NOT_FOUND, "No Videos Found");
+  profile.videos = profileBody.photo;
+  await profile.save();
+  return profile;
 };
 
 /**
