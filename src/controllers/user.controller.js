@@ -5,6 +5,7 @@ const catchAsync = require("../utils/catchAsync");
 const { userService } = require("../services");
 const config = require("../config/config");
 const { Profile } = require("../models");
+const { default: mongoose } = require("mongoose");
 const createUser = catchAsync(async (req, res) => {
   let body = req.body;
   if (req.file) createBody.photoPath = req.file.filename;

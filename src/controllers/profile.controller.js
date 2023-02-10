@@ -101,6 +101,20 @@ const addVideo = catchAsync(async (req, res) => {
   let body = req.body;
   const { user } = req;
   if (req.file) {
+    const mimeTypes = [
+      "video/x-flv",
+      "video/mp4",
+      "application/x-mpegURL",
+      "	video/MP2T",
+      "video/3gpp",
+      "video/quicktime",
+      "	video/x-msvideo",
+      "	video/x-ms-wmv",
+      "	video/mkv",
+    ];
+    if (!mimeTypes.includes(req.file.mimetype)) {
+      res.status(400).send({ msg: "Please a valid video" });
+    }
     body.photo = req.file.filename;
     const profile = await profileService.addVideo(body, user.id);
     for (var i = 0; i < profile.videos.length; i++) {

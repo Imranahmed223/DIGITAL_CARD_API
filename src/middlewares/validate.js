@@ -4,6 +4,7 @@ const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
 
 const validate = (schema) => (req, res, next) => {
+  console.log(schema);
   let data = { ...req.body };
   if (Object.keys(data).length > 0) {
     for (let key in data) {
