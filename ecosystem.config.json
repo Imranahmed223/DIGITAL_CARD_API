@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "stable-app",
+      "name": "digital-app",
       "script": "src/index.js",
       "instances": 1,
       "autorestart": true,
