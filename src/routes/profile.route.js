@@ -70,15 +70,10 @@ router
     profileController.deleteEvent
   );
 
-router
-  .route("/vidoes")
-  .get()
-  .post(auth(), fileUpload.single("vidoe"), profileController.addVideo);
-
 router.patch(
   "/videos/update",
   auth(),
-  fileUpload.single("vidoe"),
+  validate(profileValidation.updateVideoLink),
   profileController.updateVideo
 );
 

@@ -171,6 +171,11 @@ const updateContactInfo = {
     .max(4),
 };
 
+const updateVideoLink = {
+  body: Joi.object().keys({
+    videoLink: Joi.string().uri().required(),
+  }),
+};
 module.exports = {
   getProfile,
   addSocialLink,
@@ -186,4 +191,5 @@ module.exports = {
   updateLinks,
   deleteLink,
   updateContactInfo,
+  updateVideoLink,
 };

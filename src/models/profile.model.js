@@ -115,8 +115,9 @@ const profileSchema = mongoose.Schema(
         },
       },
     ],
-    videos: {
+    video: {
       type: String,
+      default: null,
     },
     links: [
       {

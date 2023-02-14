@@ -183,12 +183,12 @@ const addVideo = async (profileBody, id) => {
  * @param {Object} profileBody
  * @returns {Promise<Profile>}
  */
-const deleteVideo = async (profileBody, id) => {
+const updateVideoLink = async (profileBody, id) => {
   const profile = await Profile.findOne({ user: id });
   if (!profile) {
     throw new ApiError(httpStatus.NOT_FOUND, "No profile found");
   }
-  profile.videos = profileBody.photo;
+  profile.video = profileBody.videoLink;
   await profile.save();
   return profile;
 };
@@ -274,7 +274,7 @@ module.exports = {
   updateEvent,
   deleteEvent,
   addVideo,
-  deleteVideo,
+  updateVideoLink,
   addLinks,
   updateLinks,
   deleteLink,
