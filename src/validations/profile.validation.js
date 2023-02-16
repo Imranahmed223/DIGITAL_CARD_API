@@ -161,7 +161,7 @@ const updateContactInfo = {
     .keys({
       phoneNumber: Joi.allow(null, "").optional(),
       email: Joi.string().email().allow(null, "").optional(),
-      website: Joi.string().uri().optional(),
+      website: Joi.string().uri().allow(null, "").optional(),
       location: Joi.object().keys({
         latitude: Joi.number().optional().allow(null, ""),
         longitude: Joi.number().optional().allow(null, ""),
