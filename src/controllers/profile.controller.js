@@ -8,7 +8,7 @@ const config = require("../config/config");
 const getProfile = catchAsync(async (req, res) => {
   const { user } = req;
   const profile = await profileService.getProfileByUserId(user.id);
-  profile.photoPath = profile.photoPath.toString();
+  if (profile.photoPath) profile.photoPath = profile.photoPath.toString();
   profile.photoPath = config.rootPath + profile.photoPath;
   profile.coverImage = config.rootPath + profile.coverImage;
   for (var i = 0; i < profile.links.length; i++) {
