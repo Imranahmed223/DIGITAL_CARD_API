@@ -173,7 +173,7 @@ const updateContactInfo = {
 
 const updateVideoLink = {
   body: Joi.object().keys({
-    videoLink: Joi.string().uri().required(),
+    videoLink: Joi.string().allow(null, ""),
   }),
 };
 module.exports = {
