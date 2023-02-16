@@ -159,12 +159,12 @@ const deleteLink = {
 const updateContactInfo = {
   body: Joi.object()
     .keys({
-      phoneNumber: Joi.any().optional(),
-      email: Joi.string().email().optional(),
+      phoneNumber: Joi.allow(null, "").optional(),
+      email: Joi.string().email().allow(null, "").optional(),
       website: Joi.string().uri().optional(),
       location: Joi.object().keys({
-        latitude: Joi.number().optional(),
-        longitude: Joi.number().optional(),
+        latitude: Joi.number().optional().allow(null, ""),
+        longitude: Joi.number().optional().allow(null, ""),
       }),
     })
     .min(1)
