@@ -99,7 +99,6 @@ const readQRCode = catchAsync(async (req, res) => {
   }
   if (!profile) throw new ApiError(httpStatus.NOT_FOUND, "No profile found!");
   res.send(profile);
-  res.send({ profile });
 });
 module.exports = {
   createUser,
