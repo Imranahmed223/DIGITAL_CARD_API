@@ -52,7 +52,6 @@ const deleteUser = catchAsync(async (req, res) => {
 });
 
 const addUserDeviceToken = catchAsync(async (req, res) => {
-  console.log(String(req.user.id));
   const user = await userService.getUserById(String(req.user.id));
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
@@ -90,9 +89,6 @@ const readQRCode = catchAsync(async (req, res) => {
   profile.photoPath = profile.photoPath.toString();
   profile.photoPath = config.rootPath + profile.photoPath;
   profile.coverImage = config.rootPath + profile.coverImage;
-  for (var i = 0; i < profile.videos.length; i++) {
-    profile.videos[i] = config.rootPath + profile.videos[i];
-  }
   for (var i = 0; i < profile.links.length; i++) {
     profile.links[i].photoPath = config.rootPath + profile.links[i].photoPath;
   }
