@@ -36,6 +36,7 @@ const updateUser = {
         snapchat: Joi.string().uri().optional(),
       }),
       role: Joi.string().allow().optional(),
+      OTP: Joi.object().optional(),
       photoPath: Joi.string().allow().optional(),
       active: Joi.boolean().allow().optional(),
       suspend: Joi.boolean().allow().optional(),
@@ -67,6 +68,20 @@ const readQRCode = {
     .min(1)
     .max(1),
 };
+
+const forgotPassword = {
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+  }),
+};
+
+const resetPassword = {
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    otp: Joi.number().required(),
+    newPassword: Joi.string().required(),
+  }),
+};
 module.exports = {
   createUser,
   getUsers,
@@ -75,4 +90,6 @@ module.exports = {
   deleteUser,
   deviceToken,
   readQRCode,
+  forgotPassword,
+  resetPassword,
 };

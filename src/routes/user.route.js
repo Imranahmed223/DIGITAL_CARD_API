@@ -32,4 +32,14 @@ router.route("/qr/generate").get(auth(), userController.generateQRCode);
 router
   .route("/qr/read")
   .post(validate(userValidation.readQRCode), userController.readQRCode);
+router.post(
+  "/forgot/password",
+  validate(userValidation.forgotPassword),
+  userController.forgotPassword
+);
+router.post(
+  "/reset/password",
+  validate(userValidation.resetPassword),
+  userController.resetPassword
+);
 module.exports = router;

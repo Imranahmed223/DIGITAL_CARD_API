@@ -4,8 +4,9 @@ const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
 const { userService } = require("../services");
 const config = require("../config/config");
-const { Profile } = require("../models");
+const { Profile, User } = require("../models");
 const { default: mongoose } = require("mongoose");
+const { sendEmail } = require("../services/email.service");
 const createUser = catchAsync(async (req, res) => {
   let body = req.body;
   if (req.file) createBody.photoPath = req.file.filename;
@@ -100,6 +101,36 @@ const readQRCode = catchAsync(async (req, res) => {
   if (!profile) throw new ApiError(httpStatus.NOT_FOUND, "No profile found!");
   res.send(profile);
 });
+
+const forgotPassword = catchAsync(async (req, res) => {
+  const { email } = req.body;
+  var key = Math.floor(1000 + Math.random() * 9000);
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No user found with this email");
+  }
+  user["OTP"] = {
+    key,
+  };
+  await user.save();
+  await sendEmail(key, user.email);
+  res.send({ success: true, otp: key });
+});
+
+const resetPassword = catchAsync(async (req, res) => {
+  const { otp, email, newPassword } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No user found with this email");
+  }
+  console.log(user);
+  if (otp !== user.OTP.key) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid OTP");
+  }
+  user.password = newPassword;
+  await user.save();
+  res.send({ success: true });
+});
 module.exports = {
   createUser,
   getUsers,
@@ -110,4 +141,6 @@ module.exports = {
   removeUserDeviceToken,
   generateQRCode,
   readQRCode,
+  forgotPassword,
+  resetPassword,
 };
